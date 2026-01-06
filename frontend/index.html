@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Inventory Reservation</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div class="container">
+        <h1>Smart Inventory Reservation</h1>
+        <p class="subtitle">
+          Reserve items, confirm checkout, or cancel holds in real time.
+        </p>
+      </div>
+    </header>
+
+    <main class="container grid">
+      <section class="card">
+        <h2>1) Fetch Inventory</h2>
+        <p class="hint">
+          Enter a SKU to see product details and available quantity.
+        </p>
+        <form id="fetch-form" class="form">
+          <label>
+            SKU
+            <input type="text" name="sku" placeholder="e.g. SKU-123" required />
+          </label>
+          <button type="submit">Fetch Inventory</button>
+        </form>
+        <div id="inventory-result" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>2) Reserve Inventory</h2>
+        <p class="hint">
+          Starts checkout by reserving inventory. Generates an idempotency key
+          for safe retries.
+        </p>
+        <form id="reserve-form" class="form">
+          <label>
+            SKU
+            <input type="text" name="sku" placeholder="e.g. SKU-123" required />
+          </label>
+          <label>
+            User ID
+            <input
+              type="text"
+              name="userId"
+              placeholder="e.g. user-42"
+              required
+            />
+          </label>
+          <label>
+            Quantity
+            <input
+              type="number"
+              name="quantity"
+              min="1"
+              step="1"
+              value="1"
+              required
+            />
+          </label>
+          <label>
+            Idempotency Key
+            <input
+              type="text"
+              name="idempotencyKey"
+              placeholder="auto-generated if left blank"
+            />
+          </label>
+          <button type="submit">Reserve</button>
+        </form>
+        <div id="reserve-result" class="result"></div>
+        <div id="expiry-timer" class="timer hidden"></div>
+      </section>
+
+      <section class="card">
+        <h2>3) Confirm Checkout</h2>
+        <p class="hint">
+          Confirms a reservation by its reservationId. Use the value returned
+          from reserve.
+        </p>
+        <form id="confirm-form" class="form">
+          <label>
+            Reservation ID
+            <input
+              type="text"
+              name="reservationId"
+              placeholder="reservation UUID"
+              required
+            />
+          </label>
+          <button type="submit">Confirm</button>
+        </form>
+        <div id="confirm-result" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>4) Cancel Checkout</h2>
+        <p class="hint">
+          Cancels a reservation and restores inventory (or marks it expired if
+          the hold is past due).
+        </p>
+        <form id="cancel-form" class="form">
+          <label>
+            Reservation ID
+            <input
+              type="text"
+              name="reservationId"
+              placeholder="reservation UUID"
+              required
+            />
+          </label>
+          <button type="submit">Cancel</button>
+        </form>
+        <div id="cancel-result" class="result"></div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <div class="container">
+        <small>
+          Backend endpoints used:
+          <code>GET /api/v1/inventory/:sku</code>,
+          <code>POST /api/v1/inventory/reserve</code>,
+          <code>POST /api/v1/checkout/confirm</code>,
+          <code>POST /api/v1/checkout/cancel</code>
+        </small>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
