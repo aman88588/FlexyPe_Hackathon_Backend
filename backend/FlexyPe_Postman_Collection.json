@@ -1,0 +1,928 @@
+{
+    "info": {
+      "name": "FlexyPe Inventory System - Complete Testing",
+      "description": "Complete API testing collection for Smart Inventory Reservation System",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:4000/api/v1",
+        "type": "string"
+      },
+      {
+        "key": "reservation_id",
+        "value": "",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "01 - Admin - Setup Inventory",
+        "item": [
+          {
+            "name": "01.1 - Create Single Product (MacBook)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has success true\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "});",
+                    "",
+                    "pm.test(\"Product created with correct SKU\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.sku).to.eql(\"SKU-LAPTOP-001\");",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-LAPTOP-001\",\n  \"productName\": \"MacBook Pro 16 inch\",\n  \"totalQuantity\": 100,\n  \"availableQuantity\": 100\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/admin/inventory",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory"]
+              },
+              "description": "Create a MacBook product with 100 units in stock"
+            },
+            "response": []
+          },
+          {
+            "name": "01.2 - Create Single Product (iPhone)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-PHONE-001\",\n  \"productName\": \"iPhone 15 Pro\",\n  \"totalQuantity\": 200,\n  \"availableQuantity\": 200\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/admin/inventory",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory"]
+              },
+              "description": "Create an iPhone product with 200 units"
+            },
+            "response": []
+          },
+          {
+            "name": "01.3 - Bulk Create Products",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"All items created successfully\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.success).to.be.above(0);",
+                    "    pm.expect(jsonData.data.failed).to.eql(0);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"items\": [\n    {\n      \"sku\": \"SKU-AUDIO-001\",\n      \"productName\": \"AirPods Pro 2\",\n      \"totalQuantity\": 150,\n      \"availableQuantity\": 150\n    },\n    {\n      \"sku\": \"SKU-TABLET-001\",\n      \"productName\": \"iPad Air 2024\",\n      \"totalQuantity\": 80,\n      \"availableQuantity\": 80\n    },\n    {\n      \"sku\": \"SKU-WATCH-001\",\n      \"productName\": \"Apple Watch Series 9\",\n      \"totalQuantity\": 120,\n      \"availableQuantity\": 120\n    }\n  ]\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/admin/inventory/bulk",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory", "bulk"]
+              },
+              "description": "Create multiple products at once"
+            },
+            "response": []
+          },
+          {
+            "name": "01.4 - View All Inventory",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Has inventory items\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.items.length).to.be.above(0);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/admin/inventory/all?page=1&limit=10",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory", "all"],
+                "query": [
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              },
+              "description": "Get all inventory items with pagination"
+            },
+            "response": []
+          }
+        ],
+        "description": "Admin endpoints to create and manage inventory"
+      },
+      {
+        "name": "02 - Customer - View Inventory",
+        "item": [
+          {
+            "name": "02.1 - Check MacBook Availability",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Has available quantity\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.availableQuantity).to.be.above(0);",
+                    "    console.log('Available MacBooks:', jsonData.data.availableQuantity);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-LAPTOP-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-LAPTOP-001"]
+              },
+              "description": "Check if MacBook is available"
+            },
+            "response": []
+          },
+          {
+            "name": "02.2 - Check iPhone Availability",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-PHONE-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-PHONE-001"]
+              },
+              "description": "Check if iPhone is available"
+            },
+            "response": []
+          },
+          {
+            "name": "02.3 - Check Non-Existent SKU (Should Fail)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 404\", function () {",
+                    "    pm.response.to.have.status(404);",
+                    "});",
+                    "",
+                    "pm.test(\"Error message present\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(false);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/NON-EXISTENT-SKU",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "NON-EXISTENT-SKU"]
+              },
+              "description": "Try to check a non-existent product - should return 404"
+            },
+            "response": []
+          }
+        ],
+        "description": "Customer endpoints to view product availability"
+      },
+      {
+        "name": "03 - Reserve Inventory (Start Checkout)",
+        "item": [
+          {
+            "name": "03.1 - Reserve 5 MacBooks (Success)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"Reservation created\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "    pm.expect(jsonData.data.status).to.eql('RESERVED');",
+                    "    ",
+                    "    // Save reservation ID for later use",
+                    "    pm.collectionVariables.set('reservation_id', jsonData.data.reservationId);",
+                    "    console.log('Reservation ID:', jsonData.data.reservationId);",
+                    "    console.log('Expires at:', jsonData.data.expiresAt);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "{{$guid}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-LAPTOP-001\",\n  \"userId\": \"customer-101\",\n  \"quantity\": 5,\n  \"idempotencyKey\": \"{{$guid}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "Reserve 5 MacBooks - should decrease available quantity"
+            },
+            "response": []
+          },
+          {
+            "name": "03.2 - Verify Quantity Decreased",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Available quantity decreased\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.availableQuantity).to.eql(95);",
+                    "    console.log('Current available:', jsonData.data.availableQuantity);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-LAPTOP-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-LAPTOP-001"]
+              },
+              "description": "Verify that available quantity is now 95 (100 - 5)"
+            },
+            "response": []
+          },
+          {
+            "name": "03.3 - Test Idempotency (Same Request Again)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Returns same reservation\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "    console.log('Idempotency working - same reservation returned');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "idempotency-test-123"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-PHONE-001\",\n  \"userId\": \"customer-202\",\n  \"quantity\": 3,\n  \"idempotencyKey\": \"idempotency-test-123\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "First request with this idempotency key"
+            },
+            "response": []
+          },
+          {
+            "name": "03.4 - Test Idempotency (Duplicate Request)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Returns same reservation (no duplicate)\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "    console.log('Duplicate prevented - same reservation returned');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "idempotency-test-123"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-PHONE-001\",\n  \"userId\": \"customer-202\",\n  \"quantity\": 3,\n  \"idempotencyKey\": \"idempotency-test-123\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "Same request as 03.3 - should return same reservation without creating duplicate"
+            },
+            "response": []
+          },
+          {
+            "name": "03.5 - Reserve More Than Available (Should Fail)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 409\", function () {",
+                    "    pm.response.to.have.status(409);",
+                    "});",
+                    "",
+                    "pm.test(\"Error about insufficient inventory\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(false);",
+                    "    pm.expect(jsonData.message).to.include('Insufficient');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "{{$guid}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-LAPTOP-001\",\n  \"userId\": \"customer-999\",\n  \"quantity\": 500,\n  \"idempotencyKey\": \"{{$guid}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "Try to reserve more than available - should fail with 409"
+            },
+            "response": []
+          },
+          {
+            "name": "03.6 - Reserve with Invalid Quantity (Should Fail)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 400\", function () {",
+                    "    pm.response.to.have.status(400);",
+                    "});",
+                    "",
+                    "pm.test(\"Error about invalid quantity\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(false);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "{{$guid}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-LAPTOP-001\",\n  \"userId\": \"customer-888\",\n  \"quantity\": -5,\n  \"idempotencyKey\": \"{{$guid}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "Try to reserve negative quantity - should fail with 400"
+            },
+            "response": []
+          }
+        ],
+        "description": "Reserve inventory to start checkout process"
+      },
+      {
+        "name": "04 - Confirm Checkout (Complete Purchase)",
+        "item": [
+          {
+            "name": "04.1 - Confirm Reservation (Success)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Checkout confirmed\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "    pm.expect(jsonData.data.status).to.eql('CONFIRMED');",
+                    "    console.log('Checkout confirmed successfully');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"reservationId\": \"{{reservation_id}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/checkout/confirm",
+                "host": ["{{base_url}}"],
+                "path": ["checkout", "confirm"]
+              },
+              "description": "Confirm the reservation created in step 03.1"
+            },
+            "response": []
+          },
+          {
+            "name": "04.2 - Confirm Again (Idempotent)",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Still shows confirmed\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.status).to.eql('CONFIRMED');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"reservationId\": \"{{reservation_id}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/checkout/confirm",
+                "host": ["{{base_url}}"],
+                "path": ["checkout", "confirm"]
+              },
+              "description": "Confirm same reservation again - should be idempotent"
+            },
+            "response": []
+          },
+          {
+            "name": "04.3 - Verify Inventory Still Decreased",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Quantity still decreased after confirm\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.availableQuantity).to.eql(95);",
+                    "    console.log('Inventory permanently decreased:', jsonData.data.availableQuantity);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-LAPTOP-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-LAPTOP-001"]
+              },
+              "description": "Verify inventory is still at 95 after confirmation"
+            },
+            "response": []
+          }
+        ],
+        "description": "Confirm checkout to complete the purchase"
+      },
+      {
+        "name": "05 - Cancel Checkout (Restore Inventory)",
+        "item": [
+          {
+            "name": "05.1 - Reserve Items for Cancellation Test",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Reservation created\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.collectionVariables.set('cancel_reservation_id', jsonData.data.reservationId);",
+                    "    console.log('Created reservation for cancel test:', jsonData.data.reservationId);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Idempotency-Key",
+                  "value": "{{$guid}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"sku\": \"SKU-AUDIO-001\",\n  \"userId\": \"customer-303\",\n  \"quantity\": 10,\n  \"idempotencyKey\": \"{{$guid}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/inventory/reserve",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "reserve"]
+              },
+              "description": "Create a reservation that we will cancel"
+            },
+            "response": []
+          },
+          {
+            "name": "05.2 - Check Quantity Before Cancel",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Quantity decreased\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.availableQuantity).to.eql(140);",
+                    "    console.log('Before cancel:', jsonData.data.availableQuantity);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-AUDIO-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-AUDIO-001"]
+              },
+              "description": "Check quantity before cancellation (should be 140)"
+            },
+            "response": []
+          },
+          {
+            "name": "05.3 - Cancel Reservation",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Checkout cancelled\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "    pm.expect(jsonData.data.status).to.eql('CANCELLED');",
+                    "    console.log('Checkout cancelled successfully');",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"reservationId\": \"{{cancel_reservation_id}}\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/checkout/cancel",
+                "host": ["{{base_url}}"],
+                "path": ["checkout", "cancel"]
+              },
+              "description": "Cancel the reservation and restore inventory"
+            },
+            "response": []
+          },
+          {
+            "name": "05.4 - Verify Inventory Restored",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Quantity restored to 150\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.availableQuantity).to.eql(150);",
+                    "    console.log('After cancel (restored):', jsonData.data.availableQuantity);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-AUDIO-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-AUDIO-001"]
+              },
+              "description": "Verify inventory is restored to 150 after cancellation"
+            },
+            "response": []
+          }
+        ],
+        "description": "Cancel checkout and verify inventory is restored"
+      },
+      {
+        "name": "06 - Admin - Update & Delete",
+        "item": [
+          {
+            "name": "06.1 - Update Inventory Quantities",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Quantities updated\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.data.totalQuantity).to.eql(200);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"totalQuantity\": 200,\n  \"availableQuantity\": 200\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/admin/inventory/SKU-WATCH-001",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory", "SKU-WATCH-001"]
+              },
+              "description": "Update Apple Watch inventory to 200 units"
+            },
+            "response": []
+          },
+          {
+            "name": "06.2 - Update Product Name",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"productName\": \"Apple Watch Series 10\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/admin/inventory/SKU-WATCH-001",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory", "SKU-WATCH-001"]
+              },
+              "description": "Update product name to Series 10"
+            },
+            "response": []
+          },
+          {
+            "name": "06.3 - Delete Inventory Item",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Deletion successful\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(true);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/admin/inventory/SKU-TABLET-001",
+                "host": ["{{base_url}}"],
+                "path": ["admin", "inventory", "SKU-TABLET-001"]
+              },
+              "description": "Delete iPad from inventory"
+            },
+            "response": []
+          },
+          {
+            "name": "06.4 - Verify Deletion",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "pm.test(\"Status code is 404\", function () {",
+                    "    pm.response.to.have.status(404);",
+                    "});",
+                    "",
+                    "pm.test(\"Item not found\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.success).to.eql(false);",
+                    "});"
+                  ],
+                  "type": "text/javascript"
+                }
+              }
+            ],
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/inventory/SKU-TABLET-001",
+                "host": ["{{base_url}}"],
+                "path": ["inventory", "SKU-TABLET-001"]
+              },
+              "description": "Try to fetch deleted item - should return 404"
+            },
+            "response": []
+          }
+        ],
+        "description": "Admin operations to update and delete inventory"
+      }
+    ]
+  }

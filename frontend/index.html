@@ -3,13 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Inventory Reservation</title>
+    <meta name="description" content="Smart Inventory Reservation System - Reserve items, confirm checkout, or cancel holds in real time." />
+    <meta name="author" content="FlexyPe Team" />
+    <title>Smart Inventory Reservation System</title>
     <link rel="stylesheet" href="./styles.css" />
+    
+    <!-- Favicon (optional - add if you have one) -->
+    <!-- <link rel="icon" type="image/x-icon" href="/favicon.ico"> -->
+    
+    <!-- Preconnect to API for faster requests -->
+    <link rel="preconnect" href="http://localhost:4000" />
   </head>
   <body>
     <header class="page-header">
       <div class="container">
-        <h1>Smart Inventory Reservation</h1>
+        <h1>🛒 Smart Inventory Reservation</h1>
         <p class="subtitle">
           Reserve items, confirm checkout, or cancel holds in real time.
         </p>
@@ -17,45 +25,64 @@
     </header>
 
     <main class="container grid">
+      <!-- Section 1: Fetch Inventory -->
       <section class="card">
-        <h2>1) Fetch Inventory</h2>
+        <h2>1️⃣ Fetch Inventory</h2>
         <p class="hint">
           Enter a SKU to see product details and available quantity.
         </p>
         <form id="fetch-form" class="form">
-          <label>
+          <label for="fetch-sku">
             SKU
-            <input type="text" name="sku" placeholder="e.g. SKU-123" required />
+            <input 
+              type="text" 
+              id="fetch-sku"
+              name="sku" 
+              placeholder="e.g. SKU-LAPTOP-001" 
+              required 
+              autocomplete="off"
+            />
           </label>
-          <button type="submit">Fetch Inventory</button>
+          <button type="submit">🔍 Fetch Inventory</button>
         </form>
-        <div id="inventory-result" class="result"></div>
+        <div id="inventory-result" class="result" aria-live="polite"></div>
       </section>
 
+      <!-- Section 2: Reserve Inventory -->
       <section class="card">
-        <h2>2) Reserve Inventory</h2>
+        <h2>2️⃣ Reserve Inventory</h2>
         <p class="hint">
           Starts checkout by reserving inventory. Generates an idempotency key
           for safe retries.
         </p>
         <form id="reserve-form" class="form">
-          <label>
+          <label for="reserve-sku">
             SKU
-            <input type="text" name="sku" placeholder="e.g. SKU-123" required />
+            <input 
+              type="text" 
+              id="reserve-sku"
+              name="sku" 
+              placeholder="e.g. SKU-LAPTOP-001" 
+              required 
+              autocomplete="off"
+            />
           </label>
-          <label>
+          <label for="reserve-userId">
             User ID
             <input
               type="text"
+              id="reserve-userId"
               name="userId"
-              placeholder="e.g. user-42"
+              placeholder="e.g. customer-101"
               required
+              autocomplete="off"
             />
           </label>
-          <label>
+          <label for="reserve-quantity">
             Quantity
             <input
               type="number"
+              id="reserve-quantity"
               name="quantity"
               min="1"
               step="1"
@@ -63,71 +90,85 @@
               required
             />
           </label>
-          <label>
+          <label for="reserve-idempotencyKey">
             Idempotency Key
             <input
               type="text"
+              id="reserve-idempotencyKey"
               name="idempotencyKey"
               placeholder="auto-generated if left blank"
+              autocomplete="off"
             />
           </label>
-          <button type="submit">Reserve</button>
+          <button type="submit">🔒 Reserve</button>
         </form>
-        <div id="reserve-result" class="result"></div>
-        <div id="expiry-timer" class="timer hidden"></div>
+        <div id="reserve-result" class="result" aria-live="polite"></div>
+        <div id="expiry-timer" class="timer hidden" aria-live="polite"></div>
       </section>
 
+      <!-- Section 3: Confirm Checkout -->
       <section class="card">
-        <h2>3) Confirm Checkout</h2>
+        <h2>3️⃣ Confirm Checkout</h2>
         <p class="hint">
           Confirms a reservation by its reservationId. Use the value returned
           from reserve.
         </p>
         <form id="confirm-form" class="form">
-          <label>
+          <label for="confirm-reservationId">
             Reservation ID
             <input
               type="text"
+              id="confirm-reservationId"
               name="reservationId"
               placeholder="reservation UUID"
               required
+              autocomplete="off"
             />
           </label>
-          <button type="submit">Confirm</button>
+          <button type="submit">✅ Confirm</button>
         </form>
-        <div id="confirm-result" class="result"></div>
+        <div id="confirm-result" class="result" aria-live="polite"></div>
       </section>
 
+      <!-- Section 4: Cancel Checkout -->
       <section class="card">
-        <h2>4) Cancel Checkout</h2>
+        <h2>4️⃣ Cancel Checkout</h2>
         <p class="hint">
           Cancels a reservation and restores inventory (or marks it expired if
           the hold is past due).
         </p>
         <form id="cancel-form" class="form">
-          <label>
+          <label for="cancel-reservationId">
             Reservation ID
             <input
               type="text"
+              id="cancel-reservationId"
               name="reservationId"
               placeholder="reservation UUID"
               required
+              autocomplete="off"
             />
           </label>
-          <button type="submit">Cancel</button>
+          <button type="submit">❌ Cancel</button>
         </form>
-        <div id="cancel-result" class="result"></div>
+        <div id="cancel-result" class="result" aria-live="polite"></div>
       </section>
     </main>
 
     <footer class="page-footer">
       <div class="container">
         <small>
-          Backend endpoints used:
-          <code>GET /api/v1/inventory/:sku</code>,
-          <code>POST /api/v1/inventory/reserve</code>,
-          <code>POST /api/v1/checkout/confirm</code>,
+          <strong>Backend endpoints used:</strong>
+          <br />
+          <code>GET /api/v1/inventory/:sku</code>
+          <code>POST /api/v1/inventory/reserve</code>
+          <br />
+          <code>POST /api/v1/checkout/confirm</code>
           <code>POST /api/v1/checkout/cancel</code>
+        </small>
+        <br /><br />
+        <small>
+          💡 <strong>Tip:</strong> Press <code>Ctrl/Cmd + K</code> to clear all results
         </small>
       </div>
     </footer>
@@ -135,4 +176,3 @@
     <script src="./app.js"></script>
   </body>
 </html>
-

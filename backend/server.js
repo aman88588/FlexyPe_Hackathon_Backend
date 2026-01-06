@@ -28,19 +28,25 @@ server.use(express.json());
 server.use(RequestLoggerMiddleware);
 server.use(cors());
 
-// ============ Static Frontend ============
-const frontendDir = path.join(__dirname, "frontend");
-server.use(express.static(frontendDir));
-// =========================================
-
 // ============ Routes ============
 server.use("/api/v1", v1Router);
 // ================================
+
+// Health check
+server.get("/health", (_req, res) => {
+  res.status(200).json({ success: true, status: "ok" });
+});
+
+// ============ Static Frontend (optional) ============
+// Serves the plain HTML/CSS frontend located at ../frontend
+const frontendDir = path.join(__dirname, "..", "frontend");
+server.use(express.static(frontendDir));
 
 // Serve index.html for root
 server.get("/", (req, res) => {
   res.sendFile(path.join(frontendDir, "index.html"));
 });
+// ====================================================
 
 // ============ Graceful Shutdown ============
 process.on("SIGINT", async () => {

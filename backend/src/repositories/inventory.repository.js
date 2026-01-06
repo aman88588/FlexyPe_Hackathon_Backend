@@ -8,6 +8,46 @@ const findBySku = async (sku) => {
 };
 
 /**
+ * Create new inventory item
+ */
+const createInventory = async (data) => {
+  const inventory = new InventoryModel(data);
+  return inventory.save();
+};
+
+/**
+ * Update inventory
+ */
+const updateInventory = async (sku, updates) => {
+  return InventoryModel.findOneAndUpdate({ sku }, updates, { new: true });
+};
+
+/**
+ * Delete inventory
+ */
+const deleteInventory = async (sku) => {
+  return InventoryModel.findOneAndDelete({ sku });
+};
+
+/**
+ * Get all inventory with pagination
+ */
+const getAllInventory = async ({ page = 1, limit = 50, sortBy = "sku" }) => {
+  const skip = (page - 1) * limit;
+
+  const [items, totalItems] = await Promise.all([
+    InventoryModel.find().sort({ [sortBy]: 1 }).skip(skip).limit(limit),
+    InventoryModel.countDocuments(),
+  ]);
+
+  return {
+    items,
+    totalItems,
+    totalPages: Math.ceil(totalItems / limit),
+  };
+};
+
+/**
  * Atomically decrease available quantity
  * This prevents overselling under concurrency
  */
@@ -45,6 +85,10 @@ const increaseAvailableQuantity = async (sku, quantity, session = null) => {
 
 module.exports = {
   findBySku,
+  createInventory,
+  updateInventory,
+  deleteInventory,
+  getAllInventory,
   decreaseAvailableQuantity,
   increaseAvailableQuantity,
 };

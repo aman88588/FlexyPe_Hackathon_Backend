@@ -7,6 +7,7 @@
   --danger: #f87171;
   --success: #22c55e;
   --border: #1f2937;
+  --info: #60a5fa;
 }
 
 *,
@@ -38,6 +39,10 @@ body {
   margin: 0 0 0.5rem;
   font-size: 2rem;
   letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
@@ -58,11 +63,18 @@ body {
   border-radius: 14px;
   padding: 1.25rem 1.1rem 1.4rem;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
 .card h2 {
   margin: 0 0 0.35rem;
   font-size: 1.2rem;
+  color: var(--accent);
 }
 
 .hint {
@@ -107,6 +119,10 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
 }
 
+input::placeholder {
+  color: #475569;
+}
+
 button {
   margin-top: 0.2rem;
   padding: 0.65rem 0.9rem;
@@ -117,6 +133,23 @@ button {
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
 }
 
 button:hover {
@@ -126,6 +159,12 @@ button:hover {
 
 button:active {
   transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .result {
@@ -138,16 +177,37 @@ button:active {
   font-size: 0.95rem;
   line-height: 1.45;
   white-space: pre-wrap;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result.success {
   border-color: rgba(34, 197, 94, 0.5);
   color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.05);
 }
 
 .result.error {
   border-color: rgba(248, 113, 113, 0.5);
   color: #fecdd3;
+  background: rgba(248, 113, 113, 0.05);
+}
+
+.result.info {
+  border-color: rgba(96, 165, 250, 0.5);
+  color: #bfdbfe;
+  background: rgba(96, 165, 250, 0.05);
 }
 
 .timer {
@@ -158,6 +218,18 @@ button:active {
   border: 1px solid rgba(56, 189, 248, 0.4);
   color: #bae6fd;
   font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .hidden {
@@ -170,6 +242,8 @@ code {
   border-radius: 8px;
   border: 1px solid var(--border);
   color: #e2e8f0;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.9em;
 }
 
 .page-footer {
@@ -179,7 +253,28 @@ code {
   color: var(--muted);
 }
 
+.page-footer small {
+  display: block;
+  line-height: 1.6;
+}
+
+.page-footer code {
+  margin: 0 0.2rem;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
 @media (max-width: 600px) {
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
   .card {
     padding: 1.1rem;
   }
@@ -187,5 +282,43 @@ code {
   button {
     width: 100%;
   }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }
 
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(56, 189, 248, 0.3);
+  color: var(--text);
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
