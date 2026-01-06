@@ -656,14 +656,6 @@ Contributions are welcome! Please follow these steps:
 - Express.js for robust web framework
 - The Node.js community for amazing packages
 
----
-
-## 📞 Support
-
-For support, email your.email@example.com or open an issue in the GitHub repository.
-
----
-
 ## 🎓 Learn More
 
 - [MongoDB Transactions](https://docs.mongodb.com/manual/core/transactions/)
